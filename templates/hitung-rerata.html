@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hitung Rata-rata</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0f7fa; 
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .container:hover {
+            transform: scale(1.02);
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #01579b; /* Darker pastel blue */
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            text-align: left;
+            color: #0277bd; 
+        }
+
+        input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            border-color: #81d4fa; 
+            outline: none;
+        }
+
+        button {
+            background-color: #b3e5fc; 
+            color: #01579b; 
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1em;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 20px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #64b5f6; 
+            transform: scale(1.05);
+        }
+
+        .result-card {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #fffde7; 
+            border: 1px solid #ffecb3;
+            border-radius: 15px;
+            text-align: left;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-card h2 {
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            color: #01579b; 
+            text-transform: uppercase;
+        }
+
+        .result p {
+            font-weight: bold;
+            margin: 10px 0;
+            color: #0277bd; 
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .tombol-tambahan {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .tombol-tambahan button {
+            width: 45%;
+            font-size: 1em;
+            text-transform: uppercase;
+            border-radius: 8px;
+            padding: 12px;
+            transition: background-color 0.3s, transform 0.2s;
+            background-color: #b3e5fc; /* Light pastel blue */
+            color: #01579b; 
+        }
+
+        .tombol-tambahan button:hover {
+            background-color: #64b5f6; 
+            transform: scale(1.03);
+        }
+
+        /* Hide hitung button initially */
+        #hitung-button {
+            display: none;
+        }
+
+        /* Show hitung button when form is shown */
+        .form-shown #hitung-button {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Aplikasi Hitung Rata-rata</h1>
+
+        <form action="/proses" method="post" id="hitung-rerata-form">
+            <div class="form-group">
+                <label for="n">Masukkan Jumlah Bilangan:</label>
+                <input type="number" id="n" name="n" required>
+            </div>
+
+            <div id="data-fields">
+                <!-- Area untuk memasukkan data secara dinamis -->
+            </div>
+
+            <div id="buttons">
+                <button type="button" onclick="addDataFields()">Tambah Data</button>
+            </div>
+
+            <div id="result" class="result-card" style="display: none;">
+                <h2>Hasil Hitung Rata-rata</h2>
+                <div class="result" id="result-content">
+                    <!-- Hasil akan ditampilkan di sini -->
+                </div>
+                <div class="tombol-tambahan" id="tombol-ulang">
+                    <!-- Tombol ulang -->
+                </div>
+            </div>
+
+            <button type="submit" id="hitung-button">Hitung Rata-rata</button>
+        </form>
+    </div>
+
+    <script>
+        function addDataFields() {
+            const n = document.getElementById("n").value;
+            const dataFields = document.getElementById("data-fields");
+            dataFields.innerHTML = "";
+
+            for (let i = 1; i <= n; i++) {
+                dataFields.innerHTML += `<div class="form-group">
+                                             <label for="data${i}">Bilangan Ke-${i} :</label>
+                                             <input type="number" id="data${i}" name="data${i}" required>
+                                         </div>`;
+            }
+
+            document.getElementById("buttons").innerHTML = `<button type="button" onclick="calculateAverage()">Hitung Rata-rata</button>`;
+        }
+
+        function calculateAverage() {
+            const n = document.getElementById("n").value;
+            let total = 0;
+
+            for (let i = 1; i <= n; i++) {
+                const dataValue = parseFloat(document.getElementById(`data${i}`).value);
+                total += dataValue;
+            }
+
+            const average = total / n;
+            displayResult(average);
+        }
+
+        function displayResult(average) {
+            const resultDiv = document.getElementById("result");
+            const resultContent = document.getElementById("result-content");
+
+            resultContent.innerHTML = `<p><strong>Rata-rata :</strong> ${average.toFixed(2)}</p>`;
+            resultDiv.style.display = "block"; // Tampilkan hasil
+
+            document.getElementById("hitung-button").style.display = "none";
+
+            // Tambahkan tombol "Ulang"
+            const tombolUlang = document.createElement("button");
+            tombolUlang.textContent = "Ulang";
+            tombolUlang.classList.add("button");
+            tombolUlang.onclick = function() {
+                window.location.href = "/";
+            };
+
+            const tombolTambahan = document.getElementById("tombol-ulang");
+            tombolTambahan.innerHTML = "";
+            tombolTambahan.appendChild(tombolUlang);
+        }
+    </script>
+</body>
+</html>
